@@ -167,7 +167,7 @@ Copy your Streamlit URL and paste it in your GitHub repo → **About → Website
 
 **Deepak Yadav**
 - 🌐 Portfolio: [d0027.github.io/my-portfolio](https://d0027.github.io/my-portfolio)
-- 💼 LinkedIn: [linkedin.com/in/deepak-yadav](https://linkedin.com/in/deepak-yadav)
+- 💼 LinkedIn: [linkedin.com/in/deepak-yadav](https://www.linkedin.com/in/deepakyadav027)
 - 🐙 GitHub: [@D0027](https://github.com/D0027)
 
 ---
