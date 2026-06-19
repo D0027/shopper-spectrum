@@ -106,28 +106,6 @@ Open your browser at **http://localhost:8501** 🎉
 
 ---
 
-## ☁️ Deploy on Streamlit Cloud (Free)
-
-### Step 1 — Push to GitHub
-Make sure your project is pushed to a public GitHub repo (you've already done this ✅)
-
-### Step 2 — Sign in to Streamlit Cloud
-Go to 👉 **[share.streamlit.io](https://share.streamlit.io)** and sign in with GitHub
-
-### Step 3 — Deploy
-1. Click **"New app"**
-2. Select your repo → `D0027/shopper-spectrum`
-3. Branch → `main`
-4. Main file path → `app.py`
-5. Click **"Deploy!"**
-
-> ⏳ First deploy takes 2–5 minutes. After that, every `git push` auto-redeploys!
-
-### Step 4 — Add live URL to GitHub
-Copy your Streamlit URL and paste it in your GitHub repo → **About → Website**
-
----
-
 ## 📊 Dataset
 
 | Property | Value |
