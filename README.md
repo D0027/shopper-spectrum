@@ -13,7 +13,7 @@
 
 ## 🌐 Live Demo
 
-👉 **[View Live App](https://shopper-spectrum.streamlit.app)** *(replace with your Streamlit Cloud URL)*
+👉 **[View Live App](https://shopper-spectrum-027.streamlit.app/)** *(replace with your Streamlit Cloud URL)*
 
 ---
 
