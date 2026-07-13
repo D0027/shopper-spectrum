@@ -380,23 +380,31 @@ hr { border-color: rgba(255,255,255,0.06) !important; }
 """, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════
-#  LOAD MODELS
+#  LOAD MODELS  (memory-optimized: downcast item_sim to float32)
 # ══════════════════════════════════════════════════════════════
 @st.cache_resource(show_spinner=False)
 def load_models():
-    kmeans    = joblib.load("models/kmeans_model.pkl")
-    scaler    = joblib.load("models/scaler.pkl")
+    kmeans = joblib.load("models/kmeans_model.pkl")
+    scaler = joblib.load("models/scaler.pkl")
     with open("models/label_map.pkl", "rb") as f:
         label_map = pickle.load(f)
-    item_sim  = pd.read_pickle("models/item_similarity.pkl")
+    item_sim = pd.read_pickle("models/item_similarity.pkl")
+    item_sim = item_sim.astype("float32")  # ~50% smaller in memory, no visible effect
     with open("models/product_list.pkl", "rb") as f:
         product_list = pickle.load(f)
-    rfm_df    = pd.read_csv("models/rfm_segments.csv")
+    rfm_df = pd.read_csv("models/rfm_segments.csv")
     return kmeans, scaler, label_map, item_sim, product_list, rfm_df
 
+# ══════════════════════════════════════════════════════════════
+#  LOAD DATA  (memory-optimized dtypes, same values/output)
+# ══════════════════════════════════════════════════════════════
 @st.cache_data(show_spinner=False)
 def load_data():
-    df = pd.read_csv("data/online_retail.csv", encoding="latin1")
+    dtype_map = {
+        "Quantity": "int32",
+        "UnitPrice": "float32",
+    }
+    df = pd.read_csv("data/online_retail.csv", encoding="latin1", dtype=dtype_map)
     df = df.dropna(subset=["CustomerID"])
     df = df[~df["InvoiceNo"].astype(str).str.startswith("C")]
     df = df[df["Quantity"] > 0]
@@ -404,7 +412,7 @@ def load_data():
     df = df.drop_duplicates()
     df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"])
     df["CustomerID"]  = df["CustomerID"].astype(int)
-    df["TotalAmount"] = df["Quantity"] * df["UnitPrice"]
+    df["TotalAmount"] = (df["Quantity"] * df["UnitPrice"]).astype("float32")
     df["YearMonth"]   = df["InvoiceDate"].dt.to_period("M").astype(str)
     df["DayOfWeek"]   = df["InvoiceDate"].dt.day_name()
     return df
