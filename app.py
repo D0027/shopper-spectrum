@@ -42,24 +42,39 @@ header[data-testid="stHeader"] {
 }
 [data-testid="stToolbar"] { visibility: hidden; }
 
-/* Force the sidebar toggle arrow to actually be visible against dark bg */
-[data-testid="collapsedControl"] {
+/* Force the sidebar toggle arrow to actually be visible against dark bg.
+   Streamlit renamed this testid in 1.38+ (collapsedControl -> stSidebarCollapseButton),
+   and there's a separate expand-control shown when the sidebar is fully hidden.
+   Target all known variants so this works regardless of version. */
+[data-testid="collapsedControl"],
+[data-testid="stSidebarCollapseButton"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="stExpandSidebarButton"],
+button[kind="header"] {
     visibility: visible !important;
+    opacity: 1 !important;
     display: flex !important;
     align-items: center;
     justify-content: center;
-    background: rgba(99,102,241,0.25) !important;
-    border: 1px solid rgba(99,102,241,0.5) !important;
+    background: rgba(99,102,241,0.3) !important;
+    border: 1px solid rgba(99,102,241,0.6) !important;
     border-radius: 8px !important;
-    width: 2.2rem !important;
-    height: 2.2rem !important;
+    width: 2.4rem !important;
+    height: 2.4rem !important;
+    position: fixed !important;
     top: 0.6rem !important;
     left: 0.6rem !important;
     z-index: 999999 !important;
 }
-[data-testid="collapsedControl"] svg {
-    fill: #a78bfa !important;
-    color: #a78bfa !important;
+[data-testid="collapsedControl"] svg,
+[data-testid="stSidebarCollapseButton"] svg,
+[data-testid="stSidebarCollapsedControl"] svg,
+[data-testid="stExpandSidebarButton"] svg,
+button[kind="header"] svg {
+    fill: #ffffff !important;
+    color: #ffffff !important;
+    width: 1.2rem !important;
+    height: 1.2rem !important;
 }
 
 /* ── Responsive tweaks for narrow / mobile widths ── */
