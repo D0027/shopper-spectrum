@@ -34,9 +34,22 @@ html, body, [class*="css"] {
     color: #e8eaf0;
 }
 
-/* ── Hide default streamlit elements ── */
-#MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 2rem 3rem; max-width: 1400px; }
+/* ── Hide default streamlit elements (keep sidebar toggle intact) ──
+   NOTE: we no longer force-style the sidebar toggle via CSS guesses —
+   .streamlit/config.toml now sets base="dark" so Streamlit renders its
+   own native icons (including the sidebar arrow) with correct light
+   contrast automatically. We only hide the Deploy/GitHub/menu toolbar,
+   which is a stable, safe target that never overlaps the sidebar control. */
+#MainMenu, footer { visibility: hidden; }
+[data-testid="stToolbar"] { visibility: hidden; }
+
+/* ── Responsive tweaks for narrow / mobile widths ── */
+@media (max-width: 768px) {
+    .block-container { padding: 1rem 1rem; max-width: 100%; }
+    .hero-title { font-size: 1.8rem; }
+    .hero-banner { padding: 1.5rem 1.5rem; }
+    .metric-grid { grid-template-columns: repeat(2, 1fr); }
+}
 
 /* ── Hero Banner ── */
 .hero-banner {
@@ -380,31 +393,23 @@ hr { border-color: rgba(255,255,255,0.06) !important; }
 """, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════
-#  LOAD MODELS  (memory-optimized: downcast item_sim to float32)
+#  LOAD MODELS
 # ══════════════════════════════════════════════════════════════
 @st.cache_resource(show_spinner=False)
 def load_models():
-    kmeans = joblib.load("models/kmeans_model.pkl")
-    scaler = joblib.load("models/scaler.pkl")
+    kmeans    = joblib.load("models/kmeans_model.pkl")
+    scaler    = joblib.load("models/scaler.pkl")
     with open("models/label_map.pkl", "rb") as f:
         label_map = pickle.load(f)
-    item_sim = pd.read_pickle("models/item_similarity.pkl")
-    item_sim = item_sim.astype("float32")  # ~50% smaller in memory, no visible effect
+    item_sim  = pd.read_pickle("models/item_similarity.pkl")
     with open("models/product_list.pkl", "rb") as f:
         product_list = pickle.load(f)
-    rfm_df = pd.read_csv("models/rfm_segments.csv")
+    rfm_df    = pd.read_csv("models/rfm_segments.csv")
     return kmeans, scaler, label_map, item_sim, product_list, rfm_df
 
-# ══════════════════════════════════════════════════════════════
-#  LOAD DATA  (memory-optimized dtypes, same values/output)
-# ══════════════════════════════════════════════════════════════
 @st.cache_data(show_spinner=False)
 def load_data():
-    dtype_map = {
-        "Quantity": "int32",
-        "UnitPrice": "float32",
-    }
-    df = pd.read_csv("data/online_retail.csv", encoding="latin1", dtype=dtype_map)
+    df = pd.read_csv("data/online_retail.csv", encoding="latin1")
     df = df.dropna(subset=["CustomerID"])
     df = df[~df["InvoiceNo"].astype(str).str.startswith("C")]
     df = df[df["Quantity"] > 0]
@@ -412,7 +417,7 @@ def load_data():
     df = df.drop_duplicates()
     df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"])
     df["CustomerID"]  = df["CustomerID"].astype(int)
-    df["TotalAmount"] = (df["Quantity"] * df["UnitPrice"]).astype("float32")
+    df["TotalAmount"] = df["Quantity"] * df["UnitPrice"]
     df["YearMonth"]   = df["InvoiceDate"].dt.to_period("M").astype(str)
     df["DayOfWeek"]   = df["InvoiceDate"].dt.day_name()
     return df
@@ -599,7 +604,7 @@ if "Dashboard" in page:
         fig.update_layout(**PLOTLY_THEME, height=260,
                           title=dict(text="", x=0.5))
         fig.update_xaxes(tickangle=-30, tickfont=dict(size=10))
-        st.plotly_chart(fig, width='stretch')
+        st.plotly_chart(fig, use_container_width=True)
 
     with col2:
         st.markdown("""
@@ -627,7 +632,7 @@ if "Dashboard" in page:
                             x=0.5, y=0.5, showarrow=False,
                             font=dict(size=14, color="#f1f5f9", family="Space Grotesk"))
         fig2.update_layout(**PLOTLY_THEME, height=260, showlegend=False)
-        st.plotly_chart(fig2, width='stretch')
+        st.plotly_chart(fig2, use_container_width=True)
 
     # Row 2: Top Products + Country
     col3, col4 = st.columns(2)
@@ -658,7 +663,7 @@ if "Dashboard" in page:
         ))
         fig3.update_layout(**PLOTLY_THEME, height=300)
         fig3.update_yaxes(categoryorder="total ascending", tickfont=dict(size=9))
-        st.plotly_chart(fig3, width='stretch')
+        st.plotly_chart(fig3, use_container_width=True)
 
     with col4:
         st.markdown("""
@@ -684,7 +689,7 @@ if "Dashboard" in page:
         ))
         fig4.update_layout(**PLOTLY_THEME, height=300)
         fig4.update_xaxes(tickangle=-30, tickfont=dict(size=10))
-        st.plotly_chart(fig4, width='stretch')
+        st.plotly_chart(fig4, use_container_width=True)
 
     # Segment Summary Table
     st.markdown("""
@@ -824,7 +829,7 @@ elif "Recommendations" in page:
                 fig.update_layout(**PLOTLY_THEME, height=50+top_n*40,
                                   title=dict(text="Similarity Scores", font=dict(color="#94a3b8", size=13)))
                 fig.update_yaxes(categoryorder="total ascending", tickfont=dict(size=9))
-                st.plotly_chart(fig, width='stretch')
+                st.plotly_chart(fig, use_container_width=True)
 
     # Product Catalog
     st.markdown("---")
@@ -971,7 +976,7 @@ elif "Segmentation" in page:
                      height=450,
                      labels={"Frequency":"Frequency (# Orders)","Monetary":"Monetary (£ Total Spend)"})
     fig.update_layout(**PLOTLY_THEME)
-    st.plotly_chart(fig, width='stretch')
+    st.plotly_chart(fig, use_container_width=True)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1002,7 +1007,7 @@ elif "Analytics" in page:
                 hovertemplate="<b>%{x}</b><br>Revenue: £%{y:,.0f}<extra></extra>"
             ))
             fig.update_layout(**PLOTLY_THEME, title="Revenue by Day of Week", height=300)
-            st.plotly_chart(fig, width='stretch')
+            st.plotly_chart(fig, use_container_width=True)
 
         with col2:
             hour_df = df.groupby(df["InvoiceDate"].dt.hour)["TotalAmount"].sum().reset_index()
@@ -1017,7 +1022,7 @@ elif "Analytics" in page:
                 hovertemplate="<b>%{x}:00</b><br>Revenue: £%{y:,.0f}<extra></extra>"
             ))
             fig.update_layout(**PLOTLY_THEME, title="Revenue by Hour of Day", height=300)
-            st.plotly_chart(fig, width='stretch')
+            st.plotly_chart(fig, use_container_width=True)
 
         monthly2 = df.groupby("YearMonth").agg(
             Revenue=("TotalAmount","sum"),
@@ -1036,7 +1041,7 @@ elif "Analytics" in page:
                                      showlegend=False), row=1, col=i+1)
         fig.update_layout(**PLOTLY_THEME, height=280, title="Monthly Trends Overview")
         fig.update_xaxes(tickangle=-40, tickfont=dict(size=8))
-        st.plotly_chart(fig, width='stretch')
+        st.plotly_chart(fig, use_container_width=True)
 
     with tab2:
         country_agg = (df.groupby("Country")
@@ -1054,14 +1059,14 @@ elif "Analytics" in page:
                      hover_data=["Orders","Customers"])
         fig.update_layout(**PLOTLY_THEME)
         fig.update_xaxes(tickangle=-30)
-        st.plotly_chart(fig, width='stretch')
+        st.plotly_chart(fig, use_container_width=True)
 
         col1, col2 = st.columns(2)
         with col1:
             fig = px.pie(country_agg.head(8), values="Revenue", names="Country",
                          title="Revenue Share (Top 8)", hole=0.4, height=320)
             fig.update_layout(**PLOTLY_THEME, showlegend=True)
-            st.plotly_chart(fig, width='stretch')
+            st.plotly_chart(fig, use_container_width=True)
         with col2:
             fig = px.bar(country_agg.head(10), x="Customers", y="Country",
                          orientation="h", title="Customers by Country (Top 10)",
@@ -1070,7 +1075,7 @@ elif "Analytics" in page:
                          color_continuous_scale=["#0c4a6e","#38bdf8"])
             fig.update_layout(**PLOTLY_THEME)
             fig.update_yaxes(categoryorder="total ascending")
-            st.plotly_chart(fig, width='stretch')
+            st.plotly_chart(fig, use_container_width=True)
 
     with tab3:
         col1, col2 = st.columns(2)
@@ -1079,14 +1084,14 @@ elif "Analytics" in page:
             fig = px.histogram(rfm_df, x="Recency", nbins=50, title="Recency Distribution",
                                color_discrete_sequence=["#6366f1"], height=280)
             fig.update_layout(**PLOTLY_THEME)
-            st.plotly_chart(fig, width='stretch')
+            st.plotly_chart(fig, use_container_width=True)
 
         with col2:
             fig = px.histogram(rfm_df[rfm_df["Frequency"] <= rfm_df["Frequency"].quantile(0.99)],
                                x="Frequency", nbins=50, title="Frequency Distribution",
                                color_discrete_sequence=["#38bdf8"], height=280)
             fig.update_layout(**PLOTLY_THEME)
-            st.plotly_chart(fig, width='stretch')
+            st.plotly_chart(fig, use_container_width=True)
 
         # 3D RFM scatter
         sample3d = rfm_df.sample(min(500, len(rfm_df)), random_state=42)
@@ -1097,7 +1102,7 @@ elif "Analytics" in page:
                             title="3D RFM Customer Clusters",
                             labels={"Recency":"Recency (days)","Frequency":"Frequency","Monetary":"Monetary (£)"})
         fig.update_layout(**PLOTLY_THEME)
-        st.plotly_chart(fig, width='stretch')
+        st.plotly_chart(fig, use_container_width=True)
 
         # Box plots per segment
         fig = make_subplots(rows=1, cols=3, subplot_titles=["Recency","Frequency","Monetary"])
@@ -1110,4 +1115,4 @@ elif "Analytics" in page:
                                      showlegend=(i == 0),
                                      boxmean=True), row=1, col=i+1)
         fig.update_layout(**PLOTLY_THEME, height=380, title="RFM Distribution per Segment")
-        st.plotly_chart(fig, width='stretch')
+        st.plotly_chart(fig, use_container_width=True)
