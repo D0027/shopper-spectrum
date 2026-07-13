@@ -34,22 +34,9 @@ html, body, [class*="css"] {
     color: #e8eaf0;
 }
 
-/* ── Hide default streamlit elements (keep sidebar toggle intact) ──
-   NOTE: we no longer force-style the sidebar toggle via CSS guesses —
-   .streamlit/config.toml now sets base="dark" so Streamlit renders its
-   own native icons (including the sidebar arrow) with correct light
-   contrast automatically. We only hide the Deploy/GitHub/menu toolbar,
-   which is a stable, safe target that never overlaps the sidebar control. */
-#MainMenu, footer { visibility: hidden; }
-[data-testid="stToolbar"] { visibility: hidden; }
-
-/* ── Responsive tweaks for narrow / mobile widths ── */
-@media (max-width: 768px) {
-    .block-container { padding: 1rem 1rem; max-width: 100%; }
-    .hero-title { font-size: 1.8rem; }
-    .hero-banner { padding: 1.5rem 1.5rem; }
-    .metric-grid { grid-template-columns: repeat(2, 1fr); }
-}
+/* ── Hide default streamlit elements ── */
+#MainMenu, footer, header { visibility: hidden; }
+.block-container { padding: 2rem 3rem; max-width: 1400px; }
 
 /* ── Hero Banner ── */
 .hero-banner {
@@ -1115,4 +1102,4 @@ elif "Analytics" in page:
                                      showlegend=(i == 0),
                                      boxmean=True), row=1, col=i+1)
         fig.update_layout(**PLOTLY_THEME, height=380, title="RFM Distribution per Segment")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
