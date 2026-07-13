@@ -45,12 +45,13 @@ header[data-testid="stHeader"] {
 /* Force the sidebar toggle arrow to actually be visible against dark bg.
    Streamlit renamed this testid in 1.38+ (collapsedControl -> stSidebarCollapseButton),
    and there's a separate expand-control shown when the sidebar is fully hidden.
-   Target all known variants so this works regardless of version. */
+   Target by testid AND by aria-label/title (safer, won't catch the GitHub/deploy icon). */
 [data-testid="collapsedControl"],
 [data-testid="stSidebarCollapseButton"],
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="stExpandSidebarButton"],
-button[kind="header"] {
+button[aria-label*="sidebar" i],
+button[title*="sidebar" i] {
     visibility: visible !important;
     opacity: 1 !important;
     display: flex !important;
@@ -70,11 +71,20 @@ button[kind="header"] {
 [data-testid="stSidebarCollapseButton"] svg,
 [data-testid="stSidebarCollapsedControl"] svg,
 [data-testid="stExpandSidebarButton"] svg,
-button[kind="header"] svg {
+button[aria-label*="sidebar" i] svg,
+button[title*="sidebar" i] svg {
     fill: #ffffff !important;
     color: #ffffff !important;
     width: 1.2rem !important;
     height: 1.2rem !important;
+}
+
+/* Make sure the GitHub/Deploy/menu toolbar icons stay hidden and don't
+   get caught by any of the above */
+[data-testid="stToolbarActions"],
+[data-testid="stToolbar"] {
+    visibility: hidden !important;
+    display: none !important;
 }
 
 /* ── Responsive tweaks for narrow / mobile widths ── */
