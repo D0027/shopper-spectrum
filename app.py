@@ -34,16 +34,40 @@ html, body, [class*="css"] {
     color: #e8eaf0;
 }
 
-/* ── Hide default streamlit elements (keep sidebar toggle intact) ── */
+/* ── Hide default streamlit elements (keep sidebar toggle visible) ── */
 #MainMenu, footer { visibility: hidden; }
 header[data-testid="stHeader"] {
     background: transparent;
     height: 3rem;
 }
 [data-testid="stToolbar"] { visibility: hidden; }
+
+/* Force the sidebar toggle arrow to actually be visible against dark bg */
 [data-testid="collapsedControl"] {
     visibility: visible !important;
     display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: rgba(99,102,241,0.25) !important;
+    border: 1px solid rgba(99,102,241,0.5) !important;
+    border-radius: 8px !important;
+    width: 2.2rem !important;
+    height: 2.2rem !important;
+    top: 0.6rem !important;
+    left: 0.6rem !important;
+    z-index: 999999 !important;
+}
+[data-testid="collapsedControl"] svg {
+    fill: #a78bfa !important;
+    color: #a78bfa !important;
+}
+
+/* ── Responsive tweaks for narrow / mobile widths ── */
+@media (max-width: 768px) {
+    .block-container { padding: 1rem 1rem; max-width: 100%; }
+    .hero-title { font-size: 1.8rem; }
+    .hero-banner { padding: 1.5rem 1.5rem; }
+    .metric-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ── Hero Banner ── */
@@ -480,7 +504,7 @@ with st.sidebar:
     st.markdown("---")
 
     st.markdown("#### 📌 Navigation")
-    page = st.radio("", ["🏠 Dashboard", "🎯 Product Recommendations", "👤 Customer Segmentation", "📊 Analytics"],
+    page = st.radio("Navigation", ["🏠 Dashboard", "🎯 Product Recommendations", "👤 Customer Segmentation", "📊 Analytics"],
                     label_visibility="collapsed")
 
     st.markdown("---")
