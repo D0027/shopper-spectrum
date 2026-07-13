@@ -376,30 +376,6 @@ hr { border-color: rgba(255,255,255,0.06) !important; }
 ::-webkit-scrollbar-track { background: #0a0e1a; }
 ::-webkit-scrollbar-thumb { background: #2d3556; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
-
-/* ── Lock sidebar open: force visible + hide collapse controls ── */
-[data-testid="stSidebarCollapseButton"] { display: none !important; }
-[data-testid="collapsedControl"] { display: none !important; }
-
-section[data-testid="stSidebar"] {
-    min-width: 320px !important;
-    max-width: 320px !important;
-    width: 320px !important;
-    transform: none !important;
-    visibility: visible !important;
-    margin-left: 0px !important;
-}
-section[data-testid="stSidebar"][aria-expanded="false"] {
-    min-width: 320px !important;
-    max-width: 320px !important;
-    width: 320px !important;
-    transform: none !important;
-    margin-left: 0px !important;
-}
-div[data-testid="stSidebarContent"] {
-    display: block !important;
-    visibility: visible !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
