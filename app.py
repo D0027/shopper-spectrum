@@ -35,50 +35,8 @@ html, body, [class*="css"] {
 }
 
 /* ── Hide default streamlit elements ── */
-#MainMenu, footer { visibility: hidden; }
-[data-testid="stToolbar"] { visibility: hidden; }
-
-/* Permanently hide Streamlit's native (unreliable) sidebar arrow —
-   we render our own custom toggle button instead, further down. */
-[data-testid="collapsedControl"],
-[data-testid="stSidebarCollapseButton"],
-[data-testid="stSidebarCollapsedControl"],
-[data-testid="stExpandSidebarButton"] {
-    display: none !important;
-}
-
-/* Our custom sidebar toggle button */
-.st-key-sidebar_toggle_container {
-    position: fixed !important;
-    top: 0.7rem !important;
-    left: 0.7rem !important;
-    z-index: 999999 !important;
-    width: 2.6rem !important;
-}
-.st-key-sidebar_toggle_container button {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 8px !important;
-    width: 2.6rem !important;
-    height: 2.6rem !important;
-    font-size: 1.1rem !important;
-    font-weight: 700 !important;
-    box-shadow: 0 4px 14px rgba(99,102,241,0.5) !important;
-    padding: 0 !important;
-}
-.st-key-sidebar_toggle_container button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 18px rgba(99,102,241,0.65) !important;
-}
-
-/* ── Responsive tweaks for narrow / mobile widths ── */
-@media (max-width: 768px) {
-    .block-container { padding: 1rem 1rem; max-width: 100%; }
-    .hero-title { font-size: 1.8rem; }
-    .hero-banner { padding: 1.5rem 1.5rem; }
-    .metric-grid { grid-template-columns: repeat(2, 1fr); }
-}
+#MainMenu, footer, header { visibility: hidden; }
+.block-container { padding: 2rem 3rem; max-width: 1400px; }
 
 /* ── Hero Banner ── */
 .hero-banner {
@@ -422,22 +380,6 @@ hr { border-color: rgba(255,255,255,0.06) !important; }
 """, unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════
-#  CUSTOM SIDEBAR TOGGLE (replaces unreliable native Streamlit arrow)
-# ══════════════════════════════════════════════════════════════
-if "sidebar_visible" not in st.session_state:
-    st.session_state.sidebar_visible = True
-
-with st.container(key="sidebar_toggle_container"):
-    if st.button("☰", key="sidebar_toggle_btn", help="Show/Hide sidebar"):
-        st.session_state.sidebar_visible = not st.session_state.sidebar_visible
-
-if not st.session_state.sidebar_visible:
-    st.markdown(
-        "<style>[data-testid='stSidebar']{display:none !important;}</style>",
-        unsafe_allow_html=True
-    )
-
-# ══════════════════════════════════════════════════════════════
 #  LOAD MODELS
 # ══════════════════════════════════════════════════════════════
 @st.cache_resource(show_spinner=False)
@@ -530,7 +472,7 @@ with st.sidebar:
     st.markdown("---")
 
     st.markdown("#### 📌 Navigation")
-    page = st.radio("Navigation", ["🏠 Dashboard", "🎯 Product Recommendations", "👤 Customer Segmentation", "📊 Analytics"],
+    page = st.radio("", ["🏠 Dashboard", "🎯 Product Recommendations", "👤 Customer Segmentation", "📊 Analytics"],
                     label_visibility="collapsed")
 
     st.markdown("---")
