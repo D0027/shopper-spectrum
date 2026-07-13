@@ -34,9 +34,17 @@ html, body, [class*="css"] {
     color: #e8eaf0;
 }
 
-/* ── Hide default streamlit elements ── */
-#MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 2rem 3rem; max-width: 1400px; }
+/* ── Hide default streamlit elements (keep sidebar toggle intact) ── */
+#MainMenu, footer { visibility: hidden; }
+header[data-testid="stHeader"] {
+    background: transparent;
+    height: 3rem;
+}
+[data-testid="stToolbar"] { visibility: hidden; }
+[data-testid="collapsedControl"] {
+    visibility: visible !important;
+    display: flex !important;
+}
 
 /* ── Hero Banner ── */
 .hero-banner {
