@@ -35,9 +35,12 @@ html, body, [class*="css"] {
 }
 
 /* ── Hide default streamlit elements ── */
-#MainMenu, footer, header { visibility: hidden; }
-.block-container { padding: 2rem 3rem; max-width: 1400px; }
-
+#MainMenu, footer { visibility: hidden; }
+header {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+            
 /* ── Hero Banner ── */
 .hero-banner {
     background: linear-gradient(135deg, #1a1f35 0%, #16213e 40%, #1a1035 100%);
